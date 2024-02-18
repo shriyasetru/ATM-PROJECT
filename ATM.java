@@ -1,139 +1,140 @@
-import java.util.Scanner;
-class Account{
-    private int atmNumber;
-    private int pin;
-    private double balance;
-    private String miniStatement;
+import tkinter as tk
+import tkinter.simpledialog as simpledialog
+import tkinter.messagebox as messagebox
 
-    public Account(int atmNumber, int pin, double balance) {
-        this.atmNumber = atmNumber;
-        this.pin = pin;
-        this.balance = balance;
-        this.miniStatement = "";
-    }
+class ATM_GUI:
+    def __init__(self, master):
+        self.master = master
+        master.title("ATM Machine")
 
-    public int getAtmNumber() {
-        return atmNumber;
-    }
+        self.label_atm_number = tk.Label(master, text="ATM number:")
+        self.label_atm_number.grid(row=0, column=0, sticky="w")
 
-    public int getPin() {
-        return pin;
-    }
+        self.entry_atm_number = tk.Entry(master)
+        self.entry_atm_number.grid(row=0, column=1)
 
-    public double getBalance() {
-        return balance;
-    }
+        self.label_pin = tk.Label(master, text="PIN:")
+        self.label_pin.grid(row=1, column=0, sticky="w")
 
-    public void setBalance(double sum){
-        this.balance+=sum;
-    }
+        self.entry_pin = tk.Entry(master, show="*")
+        self.entry_pin.grid(row=1, column=1)
 
-    public String getMiniStatement() {
-        return miniStatement;
-    }
+        self.button_submit = tk.Button(master, text="Submit", command=self.validate_user)
+        self.button_submit.grid(row=2, column=0, columnspan=2)
 
-    public void setMiniStatement(String miniStatement) {
-        this.miniStatement = miniStatement;
-    }
+        self.frame_options = tk.Frame(master)
+        self.frame_options.grid(row=3, column=0, columnspan=2)
 
-    public void checkBalance() {
-        System.out.println("Your available balance is: $" + balance);
-    }
+        self.button_change_pin = tk.Button(self.frame_options, text="Change PIN", command=self.change_pin)
+        self.button_change_pin.grid(row=0, column=0)
 
-    public void withdraw(double amount) {
-        if (this.balance >= amount) {
-            this.balance-=amount;
-            String transaction = "Withdrawn $" + amount;
-            setMiniStatement(this.getMiniStatement() + transaction + "\n");
-            System.out.println("You have withdrawn: $" + amount);
-        } else {
-            System.out.println("Insufficient balance");
-        }
-    }
+        self.button_check_balance = tk.Button(self.frame_options, text="Check Balance", command=self.check_balance)
+        self.button_check_balance.grid(row=0, column=1)
 
-    public void deposit(double amount) {
-        this.balance+=amount;
-        String transaction = "Deposited $" + amount;
-        setMiniStatement(this.getMiniStatement() + transaction + "\n");
-        System.out.println("You have deposited: $" + amount);
-    }
+        self.button_withdraw = tk.Button(self.frame_options, text="Withdraw", command=self.withdraw)
+        self.button_withdraw.grid(row=1, column=0)
 
-    public void miniStatement() {
-        System.out.println("Mini statement:");
-        System.out.println(this.getMiniStatement());
-    }
-    
-    public void changePin(int newPin) {
-        pin = newPin;
-        System.out.println("PIN changed successfully");
-    }
-}
-public class ATM {
+        self.button_deposit = tk.Button(self.frame_options, text="Deposit", command=self.deposit)
+        self.button_deposit.grid(row=1, column=1)
 
-    Account[] accounts;
+        self.button_mini_statement = tk.Button(self.frame_options, text="Mini Statement", command=self.mini_statement)
+        self.button_mini_statement.grid(row=2, column=0, columnspan=2)
 
-    ATM() {
-        Account a1 = new Account(12345, 6789, 500.0);
-        Account a2 = new Account(67890, 1234, 1000.0);
-        accounts = new Account[]{a1,a2};
-    }
+        self.button_exit = tk.Button(master, text="Exit", command=master.quit)
+        self.button_exit.grid(row=4, column=0, columnspan=2)
 
-    public static void main(String[] args) {
-        ATM atm = new ATM();
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter ATM number: ");
-        int atmNumber = scanner.nextInt();
-        System.out.print("Enter PIN: ");
-        int pin = scanner.nextInt();
-        boolean found = false;
-        for (Account account : atm.accounts) {
-            if (account.getAtmNumber() == atmNumber && account.getPin() == pin) {
-                found = true;
-                while (true) {
-                    System.out.println("Choose an option:");
-                    System.out.println("1. Validate user and change PIN");
-                    System.out.println("2. Check available balance");
-                    System.out.println("3. Withdraw amount");
-                    System.out.println("4. Deposit amount");
-                    System.out.println("5. View mini statement");
-                    System.out.println("6. Exit");
-                    int option = scanner.nextInt();
-                    switch (option) {
-                        case 1:
-                            System.out.print("Enter new PIN: ");
-                            int newPin = scanner.nextInt();
-                            account.changePin(newPin);
-                            break;
-                        case 2:
-                            account.checkBalance();
-                            break;
-                        case 3:
-                            System.out.print("Enter amount to withdraw: ");
-                            double withdrawAmount = scanner.nextDouble();
-                            account.withdraw(withdrawAmount);
-                            break;
-                        case 4:
-                            System.out.print("Enter amount to deposit: ");
-                            double depositAmount = scanner.nextDouble();
-                            account.deposit(depositAmount);
-                            break;
-                        case 5:
-                            account.miniStatement();
-                            break;
-                        case 6:
-                            System.out.println("Thank you for using the ATM");
-                            return;
-                        default:
-                            System.out.println("Invalid option");
-                            break;
-                }
-            }
-        }
-    }
+    def validate_user(self):
+        atm_number = int(self.entry_atm_number.get())
+        pin = int(self.entry_pin.get())
 
-    if (!found) {
-        System.out.println("Invalid ATM number or PIN");
-    }
-}
+        found = False
+        for account in accounts:
+            if account.getAtmNumber() == atm_number and account.getPin() == pin:
+                self.current_account = account
+                found = True
+                break
 
-}
+        if found:
+            self.enable_buttons()
+        else:
+            messagebox.showerror("Error", "Invalid ATM number or PIN. Please try again.")
+            self.entry_atm_number.delete(0, tk.END)
+            self.entry_pin.delete(0, tk.END)
+
+    def enable_buttons(self):
+        for button in [self.button_change_pin, self.button_check_balance, self.button_withdraw, self.button_deposit, self.button_mini_statement]:
+            button.config(state="normal")
+
+    def change_pin(self):
+        new_pin = simpledialog.askinteger("Change PIN", "Enter new PIN:")
+        if new_pin is not None:
+            self.current_account.changePin(new_pin)
+            messagebox.showinfo("Success", "PIN changed successfully")
+
+    def check_balance(self):
+        messagebox.showinfo("Balance", f"Your available balance is: ${self.current_account.getBalance()}")
+
+    def withdraw(self):
+        amount = simpledialog.askfloat("Withdraw", "Enter amount to withdraw:")
+        if amount is not None:
+            self.current_account.withdraw(amount)
+            messagebox.showinfo("Withdraw", f"You have withdrawn: ${amount}")
+
+    def deposit(self):
+        amount = simpledialog.askfloat("Deposit", "Enter amount to deposit:")
+        if amount is not None:
+            self.current_account.deposit(amount)
+            messagebox.showinfo("Deposit", f"You have deposited: ${amount}")
+
+    def mini_statement(self):
+        messagebox.showinfo("Mini Statement", self.current_account.getMiniStatement())
+
+class Account:
+    def __init__(self, atm_number, pin, balance):
+        self.atmNumber = atm_number
+        self.pin = pin
+        self.balance = balance
+        self.miniStatement = ""
+
+    def getAtmNumber(self):
+        return self.atmNumber
+
+    def getPin(self):
+        return self.pin
+
+    def getBalance(self):
+        return self.balance
+
+    def setBalance(self, amount):
+        self.balance += amount
+
+    def getMiniStatement(self):
+        return self.miniStatement
+
+    def setMiniStatement(self, statement):
+        self.miniStatement = statement
+
+    def checkBalance(self):
+        return self.balance
+
+    def withdraw(self, amount):
+        if self.balance >= amount:
+            self.balance -= amount
+            transaction = f"Withdrawn ${amount}\n"
+            self.miniStatement += transaction
+        else:
+            messagebox.showerror("Error", "Insufficient balance")
+
+    def deposit(self, amount):
+        self.balance += amount
+        transaction = f"Deposited ${amount}\n"
+        self.miniStatement += transaction
+
+    def changePin(self, new_pin):
+        self.pin = new_pin
+
+accounts = [Account(12345, 6789, 500.0), Account(67890, 1234, 1000.0)]
+
+root = tk.Tk()
+atm_gui = ATM_GUI(root)
+root.mainloop()
